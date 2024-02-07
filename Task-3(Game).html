@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(to right, #ffffff, #ff66b2, #ffb6c1); /* White to Pink to Light Pink gradient */
+            background-image: url('Ticbg.jpg'); 
+            background-size: cover;
+            font-family: 'Arial', sans-serif;
+            color: #a769a4;
+        }
+
+        #board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 5px;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            background-color: #ffffff;
+            color: #c9609a;
+            cursor: pointer;
+        }
+
+        .cell:hover {
+            background-color: #98155d;
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1.5em;
+        }
+
+        #stats {
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 1em;
+            cursor: pointer;
+            background-color: #ed63ac;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #a527ae;
+        }
+    </style>
+    <title>Tic-Tac-Toe Web Application</title>
+</head>
+<body>
+    <div id="board"></div>
+    <div id="status"></div>
+    <div id="stats"></div>
+    <button onclick="resetGame()">Replay</button>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const stats = document.getElementById('stats');
+        const replayButton = document.querySelector('button');
+        let currentPlayer = 'X';
+        let gameBoard = ['', '', '', '', '', '', '', '', ''];
+        let gameActive = true;
+        let player1Wins = 0;
+        let player2Wins = 0;
+
+        // Create the Tic-Tac-Toe board
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.setAttribute('data-index', i);
+            cell.addEventListener('click', () => handleCellClick(i));
+            board.appendChild(cell);
+        }
+
+        function handleCellClick(index) {
+            if (gameActive && gameBoard[index] === '') {
+                gameBoard[index] = currentPlayer;
+                renderBoard();
+                checkWinner();
+                togglePlayer();
+            }
+        }
+
+        function renderBoard() {
+            board.childNodes.forEach((cell, index) => {
+                cell.textContent = gameBoard[index];
+            });
+        }
+
+        function checkWinner() {
+            const winningCombinations = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                [0, 4, 8], [2, 4, 6]
+            ];
+
+            for (const combo of winningCombinations) {
+                const [a, b, c] = combo;
+                if (gameBoard[a] && gameBoard[a] === gameBoard[b] && gameBoard[a] === gameBoard[c]) {
+                    gameActive = false;
+                    status.textContent = `Player ${currentPlayer} wins!`;
+                    updateStats();
+                    return;
+                }
+            }
+
+            if (!gameBoard.includes('')) {
+                gameActive = false;
+                status.textContent = 'It\'s a tie!';
+                updateStats();
+            }
+        }
+
+        function togglePlayer() {
+            currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        }
+
+        function resetGame() {
+            gameBoard = ['', '', '', '', '', '', '', '', ''];
+            gameActive = true;
+            status.textContent = '';
+            renderBoard();
+        }
+        
+        function updateStats() {
+            if (status.textContent.includes('Player X wins!')) {
+                player1Wins++;
+            } else if (status.textContent.includes('Player O wins!')) {
+                player2Wins++;
+            }
+
+            stats.textContent = `Player 1 Wins: ${player1Wins} | Player 2 Wins: ${player2Wins}`;
+        }
+    </script>
+</body>
+</html>
